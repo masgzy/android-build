@@ -13,6 +13,11 @@ on:
         required: false
         type: string
         default: 'main'
+      java-version:
+        description: 'Java 版本（可选，默认：17）'
+        required: false
+        type: string
+        default: '17'
 
 jobs:
   build:
@@ -36,7 +41,7 @@ jobs:
     - name: 设置 JDK
       uses: actions/setup-java@v3
       with:
-        java-version: '17'  # 使用 Java 11
+        java-version: '${{ github.event.inputs.java-version }}'  # 使用用户输入的Java版本
         distribution: 'temurin'  # 使用 Eclipse Temurin JDK
         
     # 第四步：使用 Gradle 构建 Android 应用
