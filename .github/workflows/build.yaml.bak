@@ -49,7 +49,7 @@ jobs:
     # 第五步：上传构建产物（APK 文件）
     - name: 上传 APK 文件
       if: success()  # 只有构建成功时才执行
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: apks  # 产物名称
         path: target-repo/app/build/outputs/apk/debug/*.apk  # APK 文件路径

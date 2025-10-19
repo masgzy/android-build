@@ -36,7 +36,7 @@ jobs:
     - name: 设置 JDK
       uses: actions/setup-java@v3
       with:
-        java-version: '11'  # 使用 Java 11
+        java-version: '17'  # 使用 Java 11
         distribution: 'temurin'  # 使用 Eclipse Temurin JDK
         
     # 第四步：使用 Gradle 构建 Android 应用
