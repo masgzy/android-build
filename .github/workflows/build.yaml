@@ -1,0 +1,55 @@
+name: 克隆并构建 Android 应用
+
+on:
+  # 配置手动触发事件
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: '要克隆的 GitHub 仓库（格式：用户名/仓库名）'
+        required: true
+        type: string
+      branch:
+        description: '要检出的分支（可选）'
+        required: false
+        type: string
+        default: 'main'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # 使用最新的 Ubuntu 系统作为构建环境
+    
+    steps:
+    # 第一步：检出当前仓库（可选步骤，根据需求可以删除）
+    - name: 检出当前仓库
+      uses: actions/checkout@v4
+      
+    # 第二步：克隆目标仓库
+    - name: 克隆目标仓库
+      run: |
+        git clone https://github.com/${{ github.event.inputs.repository }}.git target-repo
+        cd target-repo
+        if [ -n "${{ github.event.inputs.branch }}" ]; then
+          git checkout ${{ github.event.inputs.branch }}
+        fi
+        
+    # 第三步：设置 Java 环境（Android 构建需要）
+    - name: 设置 JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'  # 使用 Java 11
+        distribution: 'temurin'  # 使用 Eclipse Temurin JDK
+        
+    # 第四步：使用 Gradle 构建 Android 应用
+    - name: 使用 Gradle 构建
+      working-directory: ./target-repo  # 进入克隆的仓库目录
+      run: |
+        chmod +x gradlew  # 确保 gradlew 有可执行权限
+        ./gradlew assembleDebug  # 构建 debug 版本 APK
+      
+    # 第五步：上传构建产物（APK 文件）
+    - name: 上传 APK 文件
+      if: success()  # 只有构建成功时才执行
+      uses: actions/upload-artifact@v3
+      with:
+        name: apks  # 产物名称
+        path: target-repo/app/build/outputs/apk/debug/*.apk  # APK 文件路径
